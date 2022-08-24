@@ -1,9 +1,15 @@
+const app = {
+    filter: {
+        url: null,
+    }
+};
+
 chrome.devtools.network.onRequestFinished.addListener(request => {
-    if (request.response.content.mimeType === "application/json") {
-        request.getContent((body) => {
+    if (isTargetRequest(request)) {
+        request.getContent((content) => {
             const message = {
                 url: request.request.url,
-                body: body
+                content: content
             }
             chrome.runtime.sendMessage(message);
             consoleLog(message);
@@ -23,6 +29,25 @@ probeButton.addEventListener("click", async () => {
         consoleLog(response);
     });
 })
+
+let urlInput = document.getElementById("urlInput");
+urlInput.addEventListener("input", async (event) => {
+    const value = event.target.value;
+    app.filter.url = value;
+    consoleLog(`updated url filter: "${value}"`);
+})
+
+const isTargetRequest = (request) => {
+    if (request.response.content.mimeType !== "application/json") {
+        return false;
+    }
+    if (app.filter.url) {
+        if (!request.request.url.match(app.filter.url)) {
+            return false;
+        }
+    }
+    return true;
+}
 
 const consoleLog = (obj) => {
     // can't use console.log() from devtools

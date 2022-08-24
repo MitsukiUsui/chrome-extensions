@@ -9,7 +9,8 @@ const app = {
 let toggleButton = document.getElementById("toggleButton");
 toggleButton.addEventListener("click", async () => {
     if (!app.file.writable) {
-        const handle = await window.showSaveFilePicker();
+        const suggestedName = `${Date.now()}.jl`
+        const handle = await window.showSaveFilePicker({suggestedName: suggestedName});
         const writable = await handle.createWritable();
         console.log(`opened ${handle.name}`);
         app.file.handle = handle;
@@ -42,4 +43,10 @@ chrome.runtime.onMessage.addListener(async function (request, sender, sendRespon
         }
     }
     sendResponse({action: "ack", sender: "popup"});
+});
+
+window.addEventListener("unload", async function (event) {
+    if (app.file.writable) {
+        await app.file.writable.close();
+    }
 });
