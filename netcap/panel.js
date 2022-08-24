@@ -28,6 +28,8 @@ const consoleLog = (obj) => {
     // can't use console.log() from devtools
     // https://developer.chrome.com/docs/extensions/mv3/devtools/#evaluating-js
 
-    const line = JSON.stringify(obj).slice(0, 1000); // set length limit to avoid console.log error
-    chrome.devtools.inspectedWindow.eval(`console.log('${line}');`)
+    if (obj) {
+        const line = JSON.stringify(obj).slice(0, 1000); // set length limit to avoid console.log error
+        chrome.devtools.inspectedWindow.eval(`console.log('${line}');`)
+    }
 }
