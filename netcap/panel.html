@@ -3,8 +3,17 @@
     <link rel="stylesheet" href="panel.css">
 </head>
 <body>
-<button id="probeButton">probe</button>
-<input id="urlInput" type="text" size="100" value=".*">
+<div>
+    <button id="probeButton">probe</button>
+    <div>
+        <label for="logInput">show log</label>
+        <input id="logInput" type="checkbox" checked>
+    </div>
+    <div>
+        <label for="urlInput">filter url</label>
+        <input id="urlInput" type="text" size="100" value=".*">
+    </div>
+</div>
 <script src="panel.js"></script>
 </body>
 </html>

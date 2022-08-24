@@ -1,41 +1,9 @@
 const app = {
+    log: true,
     filter: {
         url: null,
     }
 };
-
-chrome.devtools.network.onRequestFinished.addListener(request => {
-    if (isTargetRequest(request)) {
-        request.getContent((content) => {
-            const message = {
-                url: request.request.url,
-                content: content
-            }
-            chrome.runtime.sendMessage(message);
-            consoleLog(message);
-        })
-    }
-});
-
-
-let probeButton = document.getElementById("probeButton");
-probeButton.addEventListener("click", async () => {
-    const message = {
-        action: "probe",
-        sender: "panel"
-    }
-    consoleLog(message);
-    chrome.runtime.sendMessage(message, function (response) {
-        consoleLog(response);
-    });
-})
-
-let urlInput = document.getElementById("urlInput");
-urlInput.addEventListener("input", async (event) => {
-    const value = event.target.value;
-    app.filter.url = value;
-    consoleLog(`updated url filter: "${value}"`);
-})
 
 const isTargetRequest = (request) => {
     if (request.response.content.mimeType !== "application/json") {
@@ -58,3 +26,44 @@ const consoleLog = (obj) => {
         chrome.devtools.inspectedWindow.eval(`console.log('${line}');`)
     }
 }
+
+chrome.devtools.network.onRequestFinished.addListener(request => {
+    if (isTargetRequest(request)) {
+        request.getContent((content) => {
+            const message = {
+                url: request.request.url,
+                content: content
+            }
+            chrome.runtime.sendMessage(message);
+            if (app.log) {
+                consoleLog(message);
+            }
+        })
+    }
+});
+
+
+let probeButton = document.getElementById("probeButton");
+probeButton.addEventListener("click", () => {
+    const message = {
+        action: "probe",
+        sender: "panel"
+    }
+    consoleLog(message);
+    chrome.runtime.sendMessage(message, function (response) {
+        consoleLog(response);
+    });
+})
+
+let logInput = document.getElementById("logInput");
+logInput.addEventListener("change", () => {
+    app.log = logInput.checked;
+    consoleLog(`updated log config : "${app.log}"`);
+})
+
+let urlInput = document.getElementById("urlInput");
+urlInput.addEventListener("input", (event) => {
+    const value = event.target.value;
+    app.filter.url = value;
+    consoleLog(`updated url filter: "${value}"`);
+})
