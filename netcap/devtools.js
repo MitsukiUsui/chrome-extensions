@@ -1,0 +1,1 @@
+chrome.devtools.panels.create("Netcap", null, 'panel.html');
