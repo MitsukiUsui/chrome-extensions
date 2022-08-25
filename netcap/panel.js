@@ -31,6 +31,7 @@ chrome.devtools.network.onRequestFinished.addListener(request => {
     if (isTargetRequest(request)) {
         request.getContent((content) => {
             const message = {
+                timestamp: Date.now(),
                 url: request.request.url,
                 content: content
             }
